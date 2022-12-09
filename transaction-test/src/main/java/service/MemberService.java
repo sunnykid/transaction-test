@@ -13,18 +13,18 @@ public class MemberService {
 	private OutidDao outidDao;
 	private MemberDao memberDao;
 	
-	public int insertMember(Member member) {
+	public int insertMember(Member paramMember) {
 		int result = 0;
 		Connection conn = null;
-		Member member = new Member();
 		
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/db58","root","java1234");
 			conn.setAutoCommit(false);  // 자동커밋(execute()) 해지
 			
-			memberDao.deleteMember(conn,memberId);
-	
+			
+			this.memberDao = new MemberDao();
+			result = memberDao.insertMember(conn, paramMember);	
 			conn.commit();
 		}catch(Exception e) {
 			try {
