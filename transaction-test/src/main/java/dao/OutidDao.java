@@ -18,6 +18,7 @@ public class OutidDao {
 		row = stmt.executeUpdate();  
         stmt.close();
 		
+        
 		return row;  // 성공시 1 리턴
 	}
 }
