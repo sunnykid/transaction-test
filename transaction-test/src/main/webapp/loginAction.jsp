@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="dao.*" %>
+<%@ page import="service.*" %>
 <%@ page import="vo.*" %>
 <!-- View 없다 -->
 
@@ -20,9 +20,11 @@
 	paramMember.setMemberId(memberId);
 	paramMember.setMemberPw(memberPw);
 	
-	MemberDao memberDao = new MemberDao();
-	Member member = memberDao.login(paramMember);
+//	MemberDao memberDao = new MemberDao();
+//	Member member = memberDao.login(paramMember);
 	
+	MemberService memberService = new MemberService();
+	Member member = memberService.login(paramMember);
 	if(member == null){
 		//로그인 실패
 		response.sendRedirect(request.getContextPath()+"/loginForm.jsp");

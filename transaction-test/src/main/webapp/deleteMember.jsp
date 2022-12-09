@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="dao.*" %>
+<%@ page import="service.*" %>
 <%@ page import="vo.*" %>
 <!-- View 필요없다 -->
 
@@ -16,14 +16,9 @@
 
 	Member loginMember = (Member)(session.getAttribute("loginMember"));
 	
-	MemberDao memberDao = new MemberDao();
-	OutidDao outidDao = new OutidDao();
+	MemberService memberService = new MemberService();
 	
-	// 2. 탈퇴성공
-	int row = memberDao.deleteMember(loginMember.getMemberId());
-	if(outidDao.insertMemberId(loginMember.getMemberId()) == 1){
-		row = memberDao.deleteMember(loginMember.getMemberId());
-	}
+	int row = memberService.deleteMember(loginMember.getMemberId());
 	
     if(row == 1) { // 탈퇴성공
  	      System.out.println("탈퇴성공!");

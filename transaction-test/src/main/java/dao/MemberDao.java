@@ -47,63 +47,44 @@ public class MemberDao {
 	
 	
 	//회원가입
-	public int insertMember(Member member) {
+	public int insertMember(Connection conn,Member member) throws Exception {
 		int row = 0;
-		Connection conn = null;
 		PreparedStatement stmt = null;
 
 		
-		try {
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/db58","root","java1234");
-			String sql = "INSERT INTO member(member_id,member_pw,member_name) VALUES (? , PASSWORD(?),?)";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, member.getMemberId());
-			stmt.setString(2, member.getMemberPw());
-			stmt.setString(3, member.getMemberName());
-			row = stmt.executeUpdate();
+		Class.forName("org.mariadb.jdbc.Driver");
+		conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/db58","root","java1234");
+		String sql = "INSERT INTO member(member_id,member_pw,member_name) VALUES (? , PASSWORD(?),?)";
+		stmt = conn.prepareStatement(sql);
+		stmt.setString(1, member.getMemberId());
+		stmt.setString(2, member.getMemberPw());
+		stmt.setString(3, member.getMemberName());
+		row = stmt.executeUpdate();
 			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				stmt.close();
-				conn.close();
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
+		stmt.close();
+		conn.close();
+
 		return row;
 	}
 	
 	//로그인
 	@SuppressWarnings("null")
-	public Member login(Member paramMember) {
+	public Member login(Connection conn,Member paramMember) throws Exception {
 		Member resultMember = null;
-		
-		Connection conn = null;
 		PreparedStatement stmt = null;
-		ResultSet rs = null;
 		
-		try {
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/db58","root","java1234");
-			String sql = "SELECT member_id memberId, member_name memberName FROM member WHERE member_id = ? AND member_pw = PASSWORD(?)";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, paramMember.getMemberId());
-			stmt.setString(2, paramMember.getMemberPw());
-			rs = stmt.executeQuery();
-			
-			if(rs.next()) {
-				resultMember = new Member();
-				resultMember.setMemberId(rs.getString("memberId"));
-				resultMember.setMemberName(rs.getString("memberName"));
-			}
-			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}finally {
-			
+		Class.forName("org.mariadb.jdbc.Driver");
+		conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/db58","root","java1234");
+		String sql = "SELECT member_id memberId, member_name memberName FROM member WHERE member_id = ? AND member_pw = PASSWORD(?)";
+		stmt = conn.prepareStatement(sql);
+		stmt.setString(1, paramMember.getMemberId());
+		stmt.setString(2, paramMember.getMemberPw());
+		ResultSet rs = stmt.executeQuery();
+		
+		if(rs.next()) {
+			resultMember = new Member();
+			resultMember.setMemberId(rs.getString("memberId"));
+			resultMember.setMemberName(rs.getString("memberName"));
 		}
 		
 		return resultMember; //로그인 실패시 null, 성공하면 Member객체
@@ -111,45 +92,17 @@ public class MemberDao {
 	
 		
 	//회원탈퇴
-	public int deleteMember(String memberId) {
-//		int outIdRow = 0;
-//		int memberRow = 0;
+	public int deleteMember(Connection conn, String memberId) throws Exception {
 
 		int row = 0;
-		Connection conn = null;
-//		PreparedStatement outIdStmt = null;
-//		PreparedStatement memberStmt = null;
 		PreparedStatement stmt = null;
 		
-		try {
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/db58","root","java1234");
-			conn.setAutoCommit(false); //1)+2) 일괄처리 -> 트랜잭션
-			// 1)
-			String sql = "DELETE FROM member WHERE member_id = ?";
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, memberId);
-			row = stmt.executeUpdate();  //autocommit : false
-			
-			conn.commit();
-		}catch(Exception e) {
-			try {
-				conn.rollback();  // 1),2)중에 하나라도 실패시 롤백
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
-		}finally {
-			try {
-				stmt.close();
-				conn.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		String sql = "DELETE FROM member WHERE member_id = ?";
+		stmt = conn.prepareStatement(sql);
+		stmt.setString(1, memberId);
+		row = stmt.executeUpdate(); 
+		stmt.close();
 		
-		return row;  // 성공시 2 리턴
+		return row;  // 성공시 1 리턴
 	}
 }
