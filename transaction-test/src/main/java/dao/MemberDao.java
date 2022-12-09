@@ -112,26 +112,24 @@ public class MemberDao {
 		
 	//회원탈퇴
 	public int deleteMember(String memberId) {
-		int outIdRow = 0;
-		int memberRow = 0;
+//		int outIdRow = 0;
+//		int memberRow = 0;
+
+		int row = 0;
 		Connection conn = null;
-		PreparedStatement outIdStmt = null;
-		PreparedStatement memberStmt = null;
+//		PreparedStatement outIdStmt = null;
+//		PreparedStatement memberStmt = null;
+		PreparedStatement stmt = null;
 		
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/db58","root","java1234");
 			conn.setAutoCommit(false); //1)+2) 일괄처리 -> 트랜잭션
 			// 1)
-			String outIdSql = "INSERT INTO outid(member_id,createdate) VALUES(?,NOW())";
-			outIdStmt = conn.prepareStatement(outIdSql);
-			outIdStmt.setString(1, memberId);
-			outIdRow = outIdStmt.executeUpdate();  //autocommit : false
-			// 2)
-			String memberSql = "DELETE FROM member WHERE member_id = ?";
-			memberStmt = conn.prepareStatement(memberSql);
-			memberStmt.setString(1, memberId);
-			memberRow = memberStmt.executeUpdate(); //autocommit : false
+			String sql = "DELETE FROM member WHERE member_id = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, memberId);
+			row = stmt.executeUpdate();  //autocommit : false
 			
 			conn.commit();
 		}catch(Exception e) {
@@ -144,8 +142,7 @@ public class MemberDao {
 			e.printStackTrace();
 		}finally {
 			try {
-				memberStmt.close();
-				outIdStmt.close();
+				stmt.close();
 				conn.close();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -153,6 +150,6 @@ public class MemberDao {
 			}
 		}
 		
-		return outIdRow+memberRow;  // 성공시 2 리턴
+		return row;  // 성공시 2 리턴
 	}
 }

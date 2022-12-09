@@ -17,9 +17,15 @@
 	Member loginMember = (Member)(session.getAttribute("loginMember"));
 	
 	MemberDao memberDao = new MemberDao();
+	OutidDao outidDao = new OutidDao();
+	
 	// 2. 탈퇴성공
 	int row = memberDao.deleteMember(loginMember.getMemberId());
-    if(row == 2) { // 탈퇴성공
+	if(outidDao.insertMemberId(loginMember.getMemberId()) == 1){
+		row = memberDao.deleteMember(loginMember.getMemberId());
+	}
+	
+    if(row == 1) { // 탈퇴성공
  	      System.out.println("탈퇴성공!");
  	      session.invalidate();
 	      response.sendRedirect(request.getContextPath()+"/loginForm.jsp");
